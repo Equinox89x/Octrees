@@ -1,0 +1,37 @@
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+public class Octree<TType>
+{
+    #region props
+    private OctreeNode<TType> node;
+    private int nrOfDivisions;
+    private ShapeType shapeType;
+    #endregion
+
+    #region init
+    public Octree(Vector3 position, float size, int nrOfDivisions, ShapeType shape)
+    {
+        shapeType = shape;
+        node = new OctreeNode<TType>(position, size, shape);
+        node.Subdivide(node, nrOfDivisions);
+    }
+    
+    public Octree(Vector3 position, Vector3[] verts, ShapeType shape)
+    {
+        shapeType = shape;
+        node = new OctreeNode<TType>(position, 0.01f, shape);
+        node.MakeHitpoints(verts);
+    }
+    #endregion
+
+    ///<summary>
+    ///Gets the top level node from the tree
+    ///</summary>
+    public OctreeNode<TType> GetRoot()
+    {
+        return node;
+    }
+}
