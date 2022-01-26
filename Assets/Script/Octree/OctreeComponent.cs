@@ -59,6 +59,9 @@ public class OctreeComponent : MonoBehaviour
         #endregion
     }
 
+    /// <summary>
+    ///creating the areas based on the items within the "static items" gameobject 
+    /// </summary>
     private void CreateAreas(OctreeNode<int> rootNode)
     {
         GameObject DetectableAreas = GameObject.Find("StaticItems");

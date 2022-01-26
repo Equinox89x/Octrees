@@ -39,7 +39,7 @@ public class OctreePlayer : MonoBehaviour
 
     #region props
     private List<OctreeNode<int>> InnerCollisionNodesDebug = new List<OctreeNode<int>>() { null, null, null, null, null, null, null, null };
-    private List<OctreeNode<int>> InnerCollisionNodes = new List<OctreeNode<int>>() { null, null, null, null, null, null, null, null };
+    //private List<OctreeNode<int>> InnerCollisionNodes = new List<OctreeNode<int>>() { null, null, null, null, null, null, null, null };
     private List<OctreeNode<int>> IntersectedWorldNodes = new List<OctreeNode<int>>();
 
     private Color minColor = new Color(1, 1, 1, 1f);
@@ -63,7 +63,7 @@ public class OctreePlayer : MonoBehaviour
         RootNode = Octree.GetRoot();
         if (RootNode == null) return;
 
-        FindInnerCollisionNodes(RootNode);
+        OctreeLib.FindInnerCollisionNodes(RootNode, Octree.InnerCollisionNodes, this.transform.position);
         #endregion
 
         #region Create the player
@@ -161,10 +161,10 @@ public class OctreePlayer : MonoBehaviour
         WorldOctree = floor.GetComponent<OctreeComponent>();
         if (WorldOctree == null) return;
 
-        FindInnerCollisionNodes(RootNode);
+        OctreeLib.FindInnerCollisionNodes(RootNode, Octree.InnerCollisionNodes, this.transform.position);
 
         //get all world nodes the player is colliding with (can be used for spatial partitioning, check neighbours, ...)
-        OctreeLib.FindIntersectingNodes(WorldOctree, InnerCollisionNodes, IntersectedWorldNodes, canDrawGameDebug);
+        OctreeLib.FindIntersectingNodes(WorldOctree, Octree.InnerCollisionNodes, IntersectedWorldNodes, canDrawGameDebug);
         #endregion
 
         # region Update the Player list in the nodes
@@ -175,7 +175,7 @@ public class OctreePlayer : MonoBehaviour
             //if(node.Players == null || node.Players.FirstOrDefault(x => x.CurrentNode == node) == null) 
             //{             
             //}
-            if(PlayerObj.CurrentNode != node)
+            if (PlayerObj.CurrentNode != node)
             {
                 if (!node.Players.Contains(PlayerObj))
                 {
@@ -187,9 +187,10 @@ public class OctreePlayer : MonoBehaviour
         }
         #endregion
 
-        //Change post processing based on territory claim
+        //player specific details, whatever your needs are
         if (this.transform.tag == "Friendly")
         {
+            #region Change post processing based on territory claim
             AreaObjects<int> obj = WorldOctree.AreaObjects.Find(x => x.AreaName == (string)PlayerObj.CurrentNode.GetData("AreaName"));
             if (obj.AreaName != null)
             {
@@ -206,24 +207,23 @@ public class OctreePlayer : MonoBehaviour
             {
                 GameObject.Find("PostProcessiongGO").GetComponent<PostProcessVolume>().enabled = false;
             }
-        }
+            #endregion
 
-        //find in which area you're in
-        //AreaObjects<int> obj2 = WorldOctree.AreaObjects.Find(x => x.IsInBuildingNodeAtPos(WorldOctree.RootNode, transform.position));
-        //print("Obj2, Currently in: " + obj2.AreaName);
-        OctreeNode<int> foundNode = OctreeLib.GetNodeAtPosition(WorldOctree.Octree.GetRoot(), transform.position);
-        if (foundNode != null)
-        {
-            if (foundNode.Blackboard != null && foundNode.Blackboard.Count != 0)
+            #region find in which area you're in
+            //AreaObjects<int> obj2 = WorldOctree.AreaObjects.Find(x => x.IsInBuildingNodeAtPos(WorldOctree.RootNode, transform.position));
+            //print("Obj2, Currently in: " + obj2.AreaName);
+            OctreeNode<int> foundNode = OctreeLib.GetNodeAtPosition(WorldOctree.Octree.GetRoot(), transform.position);
+            if (foundNode != null)
             {
-                var areaName = foundNode.GetData("AreaName");
-                print("Currently in: " + areaName);
+                if (foundNode.Blackboard != null && foundNode.Blackboard.Count != 0)
+                {
+                    var areaName = foundNode.GetData("AreaName");
+                    print("Currently in: " + areaName);
+                }
             }
-        }
+            #endregion
 
-        //Get the amount of players in your surrounding nodes
-        if (this.transform.tag == "Friendly")
-        {
+            #region Get the amount of players in your surrounding nodes
             List<Player<int>> players = new List<Player<int>>();
             foreach (OctreeNode<int> node in IntersectedWorldNodes)
             {
@@ -233,6 +233,7 @@ public class OctreePlayer : MonoBehaviour
                 }
             }
             print("Amount of nearby players: " + players.Count);
+            #endregion
         }
 
 
@@ -246,18 +247,6 @@ public class OctreePlayer : MonoBehaviour
                 {
                     OctreeLib.DrawBounds(nodeAtPosition, new Color(1, 0.5f, 0.5f, 1));
                 }
-            }
-        }
-    }
-
-    private void FindInnerCollisionNodes(OctreeNode<int> rootNode)
-    {
-        for (int i = 0; i < rootNode.SubNodes.Length; i++) // Get all nodes the player object is colliding with
-        {
-            OctreeNode<int> nodeAtPosition = OctreeLib.GetNodeAtPosition(rootNode.SubNodes[i], this.transform.position);
-            if (nodeAtPosition != null)
-            {
-                InnerCollisionNodes[i] = nodeAtPosition;
             }
         }
     }

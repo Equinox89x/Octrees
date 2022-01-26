@@ -472,4 +472,16 @@ public static class OctreeLibraryFunctions<TType>
         }
     }
     #endregion
+
+    public static void FindInnerCollisionNodes<TType>(OctreeNode<TType> rootNode, List<OctreeNode<TType>> InnerCollisionNodes, Vector3 position)
+    {
+        for (int i = 0; i < rootNode.SubNodes.Length; i++) // Get all nodes the player object is colliding with
+        {
+            OctreeNode<TType> nodeAtPosition = GetNodeAtPosition(rootNode.SubNodes[i], position);
+            if (nodeAtPosition != null)
+            {
+                InnerCollisionNodes[i] = nodeAtPosition;
+            }
+        }
+    }
 }

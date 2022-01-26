@@ -9,6 +9,13 @@ public class Octree<TType>
     private OctreeNode<TType> node;
     private int nrOfDivisions;
     private ShapeType shapeType;
+
+    private List<OctreeNode<int>> _innerCollisionNodes = new List<OctreeNode<int>>() { null, null, null, null, null, null, null, null };
+    public List<OctreeNode<int>> InnerCollisionNodes
+    {
+        get { return _innerCollisionNodes; }
+        set { _innerCollisionNodes = value; }
+    }
     #endregion
 
     #region init
@@ -30,8 +37,8 @@ public class Octree<TType>
     ///<summary>
     ///Gets the top level node from the tree
     ///</summary>
-    public OctreeNode<TType> GetRoot()
-    {
-        return node;
-    }
+    public OctreeNode<TType> GetRoot() => node;
+    //{
+    //    return node;
+    //}
 }
