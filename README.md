@@ -35,6 +35,6 @@ Say you enter an area that is radioactive, then you can add a vignette around th
 Besides that, the nodes in the world octree also have blackboard. 
 This blackboard can contain anything, meaning you can use this for spatial partioning by saving the players that are in their respectable world node, but also make the client check which other players are in the vicinity of the current player.
 
-##Conclusion
+## Conclusion
 I have shown some use-cases where octrees can be used and even mixed with other octrees.
 However, I'm sure there are many other use-cases you can think of that can make use of these octrees.
